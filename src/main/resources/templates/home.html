@@ -1,48 +1,69 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
-<head th:replace="~{fragment/template :: head}">&nbsp;</head>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragment/template :: defaultHead('Spring Security Bank – Welcome')}"></head>
 <body>
-
-<div th:replace="~{fragment/template :: navigation}">&nbsp;</div>
-
-<main>
-    <div class="container-fluid" style="padding-top: 10px; padding-bottom: 10px;">
-        <div class="row">
-            <div class="col col-md-12 col-lg-8">
-
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <h1 class="h3 mb-2">Welcome to the home page</h1>
-                        <p class="text-muted mb-3">
-                            You’ve successfully logged in using Spring Security’s custom
-                            <code>.loginPage()</code> configuration.
-                        </p>
-
-                        <p class="mb-2">
-                            This page is a simple “post-login” landing page mapped to <code>/home</code>.
-                            We’ll reuse it in later chapters when we explore
-                            <code>.defaultSuccessUrl()</code> and other login behaviors.
-                        </p>
-
-                        <hr/>
-
-                        <h2 class="h5 mb-2">Try this next:</h2>
-                        <ul class="mb-3">
-                            <li>Refresh the page and notice you stay logged in.</li>
-                            <li>Access a protected URL directly and see how Spring remembers it.</li>
-                            <li>Log out and log back in to see the redirect flow again.</li>
-                        </ul>
+<div class="layout">
+    <!-- Private topbar with username -->
+    <header th:replace="~{fragment/template :: topbarPrivate(${username})}"></header>
 
 
-                    </div>
-                </div>
+    <main class="main">
+        <section class="page-header" th:replace="~{fragment/template :: subnavigation(${username})}">
 
-            </div>
-        </div>
-    </div>
-</main>
+        </section>
 
-<footer class="footer text-center" th:replace="~{fragment/template :: footer}"></footer>
+        <section class="card">
+            <header class="card-header">
+                <h2>Home (redirect-based landing page)</h2>
+                <span class="label-pill">/home · defaultSuccessUrl</span>
+            </header>
 
+            <p style="font-size:0.95rem; color:#6b7280;">
+                This is a “normal” home page you would typically reach using
+                <code>defaultSuccessUrl("/home")</code> after login. It behaves like a standard
+                Post-Redirect-Get (PRG) flow: the browser performs a real redirect and the URL
+                visibly changes to <code>/home</code>.
+            </p>
+
+            <hr style="margin:1rem 0;" />
+
+            <h3 style="font-size:1rem; margin-bottom:0.4rem;">How this differs from <code>successForwardUrl()</code></h3>
+            <ul style="font-size:0.9rem; color:#4b5563; padding-left:1.2rem; margin-top:0.35rem;">
+                <li>
+                    After login, the browser issues a new <code>GET /home</code> request – unlike
+                    <code>successForwardUrl("/customSuccessPage")</code>, which stays on the original
+                    <code>POST /auth/login_processing</code>.
+                </li>
+                <li>
+                    Refreshing this page is safe: it just re-runs <code>GET /home</code> and does
+                    <strong>not</strong> resubmit the login form.
+                </li>
+                <li>
+                    The URL bar clearly shows <code>/home</code>, which is easier to bookmark and share
+                    than the login processing URL.
+                </li>
+            </ul>
+
+            <hr style="margin:1rem 0;" />
+
+            <h3 style="font-size:1rem; margin-bottom:0.4rem;">Things you can try</h3>
+            <ol style="font-size:0.9rem; color:#4b5563; padding-left:1.2rem; margin-top:0.35rem;">
+                <li>Log in with <code>admin/password</code> using a redirect-based configuration.</li>
+                <li>Hit refresh several times – notice there is no “confirm form resubmission” warning.</li>
+                <li>Directly visit a protected URL, log in, and watch Spring Security redirect you back here.</li>
+            </ol>
+
+            <p style="font-size:0.85rem; color:#6b7280; margin-top:1rem;">
+                Tip: in this chapter, you can switch between
+                <code>successForwardUrl("/customSuccessPage")</code> and
+                <code>defaultSuccessUrl("/home")</code> and observe the difference in URL, refresh
+                behavior, and browser history.
+            </p>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragment/template :: footer}"></footer>
+</div>
 </body>
 </html>

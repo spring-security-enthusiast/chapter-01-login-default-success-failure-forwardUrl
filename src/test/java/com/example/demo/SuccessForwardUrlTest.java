@@ -18,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -36,23 +37,31 @@ public class SuccessForwardUrlTest {
     MockMvc mvc;
 
     @Test
-    @DisplayName("Should forward to /customSuccessPage after successful login")
-    void testSuccessForwardUrl() throws Exception {
-
+    @DisplayName("Unauthenticated user redirected to login")
+    void testUnauthenticatedRedirect() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/home"))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/auth/login"))
-            .andDo(result -> {
-                var session = result.getRequest().getSession(false);
-                mvc.perform(MockMvcRequestBuilders.post("/auth/login_processing")
-                    .param("username", "admin")
-                    .param("password", "password")
-                    .with(csrf())
-                    .session((MockHttpSession) session))
-            .andExpect(status().isOk())
-            .andExpect(forwardedUrl("/customSuccessPage"))
-            .andDo(print());
-        });
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/auth/login"));
+    }
+
+
+    @Test
+    @DisplayName("Successful login forwards to custom page")
+    void testSuccessfulLoginForward() throws Exception {
+        // First, trigger redirect to capture session
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/home"))
+                .andReturn();
+
+        MockHttpSession session = (MockHttpSession) result.getRequest().getSession();
+
+        // Then authenticate
+        mvc.perform(MockMvcRequestBuilders.post("/auth/login_processing")
+                        .param("username", "admin")
+                        .param("password", "password")
+                        .with(csrf())
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(forwardedUrl("/customSuccessPage"));
     }
 
     @TestConfiguration

@@ -1,54 +1,103 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
-<head th:replace="~{fragment/template :: head}">&nbsp;</head>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      lang="en">
+<!-- CORRECT -->
+<head th:replace="~{fragment/template :: authHead('Spring Security Bank – Login')}"></head>
 <body>
+<div class="layout">
+    <!-- Top bar -->
+    <header th:replace="~{fragment/template :: topbarPublic}"></header>
 
-<div class="container main-container">
-    <div class="row justify-content-md-center">
-        <div class="col-md-6 login-form">
-            <div th:if="${param.error}">
-                <p style="color: red;" th:text="${param.error}"></p>
+    <!-- Login card -->
+    <main class="main">
+        <section class="card">
+            <header class="card-header">
+                <span class="env-pill">
+                    <span class="env-dot"></span>
+                    Login · Forward flow
+                </span>
+                <h1 class="card-title">Sign in to your account</h1>
+                <p class="card-subtitle">
+                    Use the demo credentials to simulate a real online banking login.
+                </p>
+            </header>
+
+            <!-- Global error based on param.error / SPRING_SECURITY_LAST_EXCEPTION -->
+            <div class="error-block" th:if="${param.error != null}">
+                <div class="alert-error"
+                     th:with="errorMsg=${session != null ? session['SPRING_SECURITY_LAST_EXCEPTION'] : null}">
+                    <strong>Login failed.</strong>
+                    <span th:text="${errorMsg != null ? errorMsg.message : 'Invalid username or password.'}">
+                        Invalid username or password.
+                    </span>
+                </div>
             </div>
 
-            <div class="error"  th:if="${param.error != null and session != null and session['SPRING_SECURITY_LAST_EXCEPTION'] != null}"
-                 th:with="errorMsg=${session['SPRING_SECURITY_LAST_EXCEPTION'].message}">
-                <div class="alert alert-warning" th:text="${errorMsg}">Login failed.</div>
-            </div>
-            <h1>LOGIN PAGE</h1>
             <form th:action="@{/auth/login_processing}" method="post">
-                <div class="mb-3">
-                    <label for="username" class="form-label">USERNAME</label>
-                    <input type="text"
-                           autocomplete="off"
-                           name="username"
-                           class="form-control custom-login-input"
-                           id="username"
-                           placeholder="IDENTITY"
-                           value="admin"
-                    />
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">PASSWORD</label>
-                    <input type="password"
-                           name="password"
-                           class="form-control custom-login-input"
-                           id="password"
-                           placeholder="PASSWORD"
-                           autocomplete="current-password"
-                           value="password"
-                    />
-                </div>
+                <!-- CSRF token (if enabled) -->
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}" />
+
                 <div class="form-group">
-                    <button type="submit">LOG IN</button>
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <input type="text"
+                               id="username"
+                               name="username"
+                               placeholder="e.g. admin"
+                               autocomplete="username"
+                               value="admin" />
+                    </div>
+                    <div class="hint">
+                        For this demo, the username is <code>admin</code>.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               placeholder="Enter your password"
+                               autocomplete="current-password"
+                               value="password" />
+                    </div>
+                    <div class="hint">
+                        Demo password is <code>password</code>.
+                    </div>
+                </div>
+
+                <div class="actions-row">
+                    <button type="submit">
+                        <span>Log in</span>
+                        <span>→</span>
+                    </button>
+                    <div class="demo-tag">
+                        Demo user:&nbsp;<code>admin/password</code>
+                    </div>
                 </div>
             </form>
 
-            <div class="alert alert-info mt-3" role="alert">
-                Enter credential <b>admin/password</b> to access demo application.
+            <div class="demo-hint-box">
+                <b>How this ties to the chapter:</b><br />
+                This login form posts to <code>/auth/login_processing</code>.
+                After a successful login, Spring Security forwards the same
+                <code>POST</code> request to <code>/customSuccessPage</code>
+                using <code>successForwardUrl("/customSuccessPage")</code>.
             </div>
-        </div>
-    </div>
-</div>
 
+            <div class="footer-note">
+                Try logging in and notice how, after success, the browser URL
+                remains <code>/auth/login_processing</code> while the view changes
+                to your simulated bank welcome page.
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragment/template :: footer}"></footer>
+</div>
 </body>
 </html>

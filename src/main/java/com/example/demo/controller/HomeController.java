@@ -11,8 +11,8 @@ public class HomeController {
         return "home";
     }
 
-    @GetMapping( value = {"/about"})
-    public String about() {
-        return "about";
+    @GetMapping( value = {"/dashboard"})
+    public String dashboard() {
+        return "dashboard";
     }
 }
