@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +22,12 @@ public class LoginController {
     }
 
     @PostMapping("/customSuccessPage")
-    public String customSuccessPage(Model model, Principal principal) {
-        return "custom";
+    public String customSuccessPage(Model model, Principal principal, HttpServletRequest request) {
+        String ipAddress = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+        model.addAttribute("username", principal.getName());
+        model.addAttribute("ipAddress", ipAddress);
+        model.addAttribute("userAgent", userAgent);
+        return "dashboard";
     }
 }
