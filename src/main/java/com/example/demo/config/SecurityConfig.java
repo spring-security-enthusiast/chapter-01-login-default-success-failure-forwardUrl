@@ -20,19 +20,19 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
                     PathRequest.toStaticResources().atCommonLocations(),
+                    PathPatternRequestMatcher.withDefaults().matcher("/auth/**"),
                     PathPatternRequestMatcher.withDefaults().matcher("/error/**")
                 ).permitAll()
-                .requestMatchers("/auth/login").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(formLogin -> formLogin
                 .loginPage("/auth/login")          // GET: show the login page
                 .loginProcessingUrl("/auth/login_processing") // POST: process the login form
                 .successForwardUrl("/customSuccessPage") // @PostMapping - Specify the home page
+                .failureForwardUrl("/auth/loginFailure") // Specify the URL for server-side forward upon authentication failure
                 .permitAll()                       // also whitelists /auth/login (GET + POST)
             );
-            // no .logout(...) here yet
-
         return http.build();
     }
+
 }
