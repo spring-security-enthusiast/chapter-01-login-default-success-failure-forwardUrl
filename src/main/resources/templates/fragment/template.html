@@ -685,8 +685,22 @@
             </div>
             <span th:text="${username}">admin</span>
             <span style="opacity:0.6;">·</span>
-            <a href="/logout" style="color:#fde68a; text-decoration:none;">Logout</a>
+
+            <form id="logoutForm"
+                  th:action="@{/logout}"
+                  method="post"
+                  style="display: inline;">
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}" />
+                <button type="submit"
+                        style="color:#fde68a; text-decoration:none; background: none; border: none; padding: 0; cursor: pointer;">
+                    Logout
+                </button>
+            </form>
         </div>
+
+
     </div>
 </header>
 

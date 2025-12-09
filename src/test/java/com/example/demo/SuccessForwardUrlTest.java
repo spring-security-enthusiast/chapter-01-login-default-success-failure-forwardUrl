@@ -75,7 +75,6 @@ public class SuccessForwardUrlTest {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 PathRequest.toStaticResources().atCommonLocations(),
-                                PathPatternRequestMatcher.withDefaults().matcher("/auth/login"),
                                 PathPatternRequestMatcher.withDefaults().matcher("/error/**")
                         ).permitAll()
                         .anyRequest().authenticated()
